@@ -12,7 +12,6 @@ endif()
 project(TheForceEngine
 	HOMEPAGE_URL "https://theforceengine.github.io"
 	DESCRIPTION "Modern 'Jedi Engine' replacement supporting Dark Forces, mods, and in the future Outlaws."
-	LANGUAGES C CXX ASM
 	)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -97,10 +96,9 @@ if(ENABLE_TFE)
 	endif()
 
 	if(ENABLE_SYSMIDI)
-		pkg_check_modules(RTMIDI rtmidi>=5.0.0)
-		if(RTMIDI_FOUND)
-			add_definitions("-DBUILD_SYSMIDI")
-			target_link_libraries(tfe PRIVATE ${RTMIDI_LIBRARIES})
+		find_package(rtmidi 5 REQUIRED)
+		add_definitions("-DBUILD_SYSMIDI")
+		target_link_libraries(tfe PRIVATE ${RTMIDI_LIBRARIES})
 		else()
 			set(ENABLE_SYSMIDI 0)
 			message(STATUS "System MIDI Disabled")

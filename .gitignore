@@ -58,6 +58,7 @@
 *~
 
 #Directories
+build/
 .vs/
 Internal/
 TheForceEngine/Games/

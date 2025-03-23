@@ -34,8 +34,9 @@ jobs:
 
     - name: Dependencies (vcpkg)
       if: runner.os != 'linux'
-      shell: bash
-      run: vcpkg install
+      uses: lukka/run-vcpkg@v11
+      with:
+        runVcpkgInstall: true
 
     - name: cmake Configure
       shell: bash
