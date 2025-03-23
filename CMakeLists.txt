@@ -6,7 +6,7 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 # force Release by default.
 if(NOT DEFINED CMAKE_BUILD_TYPE)
-       set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
+		set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
 endif()
 
 project(TheForceEngine
@@ -36,15 +36,15 @@ endif()
 
 if(WIN32)
 	# windows: drop everything into one folder
-        set(CMAKE_INSTALL_BINDIR ".")
-        set(CMAKE_INSTALL_LIBDIR ".")
-        set(CMAKE_INSTALL_DATADIR ".")
+		set(CMAKE_INSTALL_BINDIR ".")
+		set(CMAKE_INSTALL_LIBDIR ".")
+		set(CMAKE_INSTALL_DATADIR ".")
 else()
 	set(TFE_ICONDIR "share/icons/hicolor")
 	# tweak DATADIR to end up with ./share/TheForceEngine/
-        set(CMAKE_INSTALL_DATADIR "share/${PROJECT_NAME}"
-                CACHE PATH "Read-only architecture-independent data"
-        )
+		set(CMAKE_INSTALL_DATADIR "share/${PROJECT_NAME}"
+				CACHE PATH "Read-only architecture-independent data"
+		)
 endif()
 include(GNUInstallDirs)
 
@@ -62,10 +62,10 @@ if(ENABLE_TFE)
 		set(THREADS_PREFER_PTHREAD_FLAG ON)
 		find_package(Threads REQUIRED)
 		find_package(PkgConfig REQUIRED)
-	    find_package(SDL2 CONFIG REQUIRED)
-    	find_package(SDL2_image CONFIG REQUIRED)
-    	target_include_directories(tfe PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-  		target_include_directories(tfe PRIVATE ${SDL2_IMAGE_INCLUDE_DIRS})
+		find_package(SDL2 CONFIG REQUIRED)
+		find_package(SDL2_image CONFIG REQUIRED)
+		target_include_directories(tfe PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+		target_include_directories(tfe PRIVATE ${SDL2_IMAGE_INCLUDE_DIRS})
 		target_link_libraries(tfe PRIVATE
 			$<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
 			$<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
@@ -97,9 +97,9 @@ if(ENABLE_TFE)
 	endif()
 
 	if(ENABLE_SYSMIDI)
-		find_package(rtmidi 5 REQUIRED)
+		find_package(rtmidi 5 CONFIG REQUIRED)
+		target_link_libraries(main PRIVATE RtMidi::rtmidi)
 		add_definitions("-DBUILD_SYSMIDI")
-		target_link_libraries(tfe PRIVATE ${RTMIDI_LIBRARIES})
 	endif()
 	if(ENABLE_EDITOR)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_EDITOR")
@@ -136,14 +136,14 @@ if(ENABLE_TFE)
 		"${CMAKE_CURRENT_SOURCE_DIR}/TheForceEngine/Fonts"
 		"${CMAKE_CURRENT_SOURCE_DIR}/TheForceEngine/Tests"
 		DESTINATION "${CMAKE_INSTALL_DATADIR}"
-		    FILE_PERMISSIONS
-		      OWNER_READ OWNER_WRITE
-		      GROUP_READ
-		      WORLD_READ
-		    DIRECTORY_PERMISSIONS
-		      OWNER_READ OWNER_EXECUTE OWNER_WRITE
-		      GROUP_READ GROUP_EXECUTE GROUP_WRITE
-		      WORLD_READ WORLD_EXECUTE
+			FILE_PERMISSIONS
+			  OWNER_READ OWNER_WRITE
+			  GROUP_READ
+			  WORLD_READ
+			DIRECTORY_PERMISSIONS
+			  OWNER_READ OWNER_EXECUTE OWNER_WRITE
+			  GROUP_READ GROUP_EXECUTE GROUP_WRITE
+			  WORLD_READ WORLD_EXECUTE
 	)
 	# Always install the “Mods” directory but not always the “AdjustableHud” mod
 	install(DIRECTORY
