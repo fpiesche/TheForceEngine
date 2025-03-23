@@ -55,4 +55,4 @@ jobs:
 
     - name: cmake Build
       shell: bash
-      run: ninja
+      run: cd build && ninja
