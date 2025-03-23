@@ -6,13 +6,12 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 # force Release by default.
 if(NOT DEFINED CMAKE_BUILD_TYPE)
-       set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
+		set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
 endif()
 
 project(TheForceEngine
 	HOMEPAGE_URL "https://theforceengine.github.io"
 	DESCRIPTION "Modern 'Jedi Engine' replacement supporting Dark Forces, mods, and in the future Outlaws."
-	LANGUAGES C CXX ASM
 	)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -37,15 +36,15 @@ endif()
 
 if(WIN32)
 	# windows: drop everything into one folder
-        set(CMAKE_INSTALL_BINDIR ".")
-        set(CMAKE_INSTALL_LIBDIR ".")
-        set(CMAKE_INSTALL_DATADIR ".")
+		set(CMAKE_INSTALL_BINDIR ".")
+		set(CMAKE_INSTALL_LIBDIR ".")
+		set(CMAKE_INSTALL_DATADIR ".")
 else()
 	set(TFE_ICONDIR "share/icons/hicolor")
 	# tweak DATADIR to end up with ./share/TheForceEngine/
-        set(CMAKE_INSTALL_DATADIR "share/${PROJECT_NAME}"
-                CACHE PATH "Read-only architecture-independent data"
-        )
+		set(CMAKE_INSTALL_DATADIR "share/${PROJECT_NAME}"
+				CACHE PATH "Read-only architecture-independent data"
+		)
 endif()
 include(GNUInstallDirs)
 
@@ -63,15 +62,17 @@ if(ENABLE_TFE)
 		set(THREADS_PREFER_PTHREAD_FLAG ON)
 		find_package(Threads REQUIRED)
 		find_package(PkgConfig REQUIRED)
-		find_package(SDL2 REQUIRED)
-		pkg_check_modules(SDL2_IMAGE REQUIRED SDL2_image)
+		find_package(SDL2 REQUIRED CONFIG REQUIRED COMPONENTS SDL2)
+		find_package(SDL2 REQUIRED CONFIG COMPONENTS SDL2main)
+		find_package(SDL2_image CONFIG REQUIRED)
 		target_include_directories(tfe PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-		target_include_directories(tfe PRIVATE ${SDL2_INCLUDE_DIRS})
 		target_include_directories(tfe PRIVATE ${SDL2_IMAGE_INCLUDE_DIRS})
-		target_link_libraries(tfe PRIVATE ${SDL2_LIBRARIES}
-					${SDL2_IMAGE_LIBRARIES}
-					${CMAKE_DL_LIBS}
-					Threads::Threads
+		target_link_libraries(tfe PRIVATE
+			$<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+			$<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+			$<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
+			${CMAKE_DL_LIBS}
+			Threads::Threads
 		)
 
 		# set up build directory to be able to run TFE immediately: symlink
@@ -97,20 +98,14 @@ if(ENABLE_TFE)
 	endif()
 
 	if(ENABLE_SYSMIDI)
-		pkg_check_modules(RTMIDI rtmidi>=5.0.0)
-		if(RTMIDI_FOUND)
-			add_definitions("-DBUILD_SYSMIDI")
-			target_link_libraries(tfe PRIVATE ${RTMIDI_LIBRARIES})
-		else()
-			set(ENABLE_SYSMIDI 0)
-			message(STATUS "System MIDI Disabled")
-		endif()
+		find_library(RTMIDI rtmidi REQUIRED)
+		target_link_libraries(tfe PRIVATE ${RTMIDI})
+		add_definitions("-DBUILD_SYSMIDI")
 	endif()
 	if(ENABLE_EDITOR)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_EDITOR")
 	endif()
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_FORCE_SCRIPT")
-
 
 	target_include_directories(tfe PRIVATE "TheForceEngine/TFE_ForceScript/Angelscript/angelscript/include")
 	target_include_directories(tfe PRIVATE "TheForceEngine/TFE_ForceScript/Angelscript/add_on")
@@ -141,14 +136,14 @@ if(ENABLE_TFE)
 		"${CMAKE_CURRENT_SOURCE_DIR}/TheForceEngine/Fonts"
 		"${CMAKE_CURRENT_SOURCE_DIR}/TheForceEngine/Tests"
 		DESTINATION "${CMAKE_INSTALL_DATADIR}"
-		    FILE_PERMISSIONS
-		      OWNER_READ OWNER_WRITE
-		      GROUP_READ
-		      WORLD_READ
-		    DIRECTORY_PERMISSIONS
-		      OWNER_READ OWNER_EXECUTE OWNER_WRITE
-		      GROUP_READ GROUP_EXECUTE GROUP_WRITE
-		      WORLD_READ WORLD_EXECUTE
+			FILE_PERMISSIONS
+			  OWNER_READ OWNER_WRITE
+			  GROUP_READ
+			  WORLD_READ
+			DIRECTORY_PERMISSIONS
+			  OWNER_READ OWNER_EXECUTE OWNER_WRITE
+			  GROUP_READ GROUP_EXECUTE GROUP_WRITE
+			  WORLD_READ WORLD_EXECUTE
 	)
 	# Always install the “Mods” directory but not always the “AdjustableHud” mod
 	install(DIRECTORY

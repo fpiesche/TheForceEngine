@@ -1,0 +1,58 @@
+name: Build TFE
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch: {}
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    name: Build
+    runs-on: ${{ matrix.runner }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        runner:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
+          - windows-latest
+          - macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Dependencies (Linux)
+      if: runner.os == 'linux'
+      shell: bash
+      run: |
+        sudo apt-get update -qq && \
+        sudo apt-get install -y libsdl2-dev libsdl2-image-dev librtmidi-dev
+
+    - name: Dependencies (macOS)
+      if: runner.os == 'macos'
+      run: brew install sdl2 sdl2_image rtmidi
+
+    - name: Dependencies (Windows)
+      if: runner.os == 'windows'
+      uses: lukka/run-vcpkg@v11
+      with:
+        runVcpkgInstall: true
+
+    - name: cmake Configure
+      shell: bash
+      run: |
+        cmake -B ./build \
+          -G Ninja \
+          -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
+          -DENABLE_FORCE_SCRIPT=ON \
+          -DENABLE_EDITOR=ON
+
+    - name: cmake Build
+      shell: bash
+      run: cd build && ninja
