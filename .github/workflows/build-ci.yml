@@ -48,10 +48,11 @@ jobs:
       shell: bash
       run: |
         cmake -B ./build \
+          -G Ninja \
           -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
           -DENABLE_FORCE_SCRIPT=ON \
           -DENABLE_EDITOR=ON
 
     - name: cmake Build
       shell: bash
-      run: cmake --build ./build --config ${{env.BUILD_TYPE}}
+      run: ninja
