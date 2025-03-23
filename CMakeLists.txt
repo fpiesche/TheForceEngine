@@ -99,7 +99,7 @@ if(ENABLE_TFE)
 
 	if(ENABLE_SYSMIDI)
 		find_library(RTMIDI rtmidi REQUIRED)
-		target_link_libraries(main PRIVATE ${RTMIDI})
+		target_link_libraries(tfe PRIVATE ${RTMIDI})
 		add_definitions("-DBUILD_SYSMIDI")
 	endif()
 	if(ENABLE_EDITOR)
