@@ -62,15 +62,16 @@ if(ENABLE_TFE)
 		set(THREADS_PREFER_PTHREAD_FLAG ON)
 		find_package(Threads REQUIRED)
 		find_package(PkgConfig REQUIRED)
-		find_package(SDL2 REQUIRED)
-		pkg_check_modules(SDL2_IMAGE REQUIRED SDL2_image)
-		target_include_directories(tfe PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-		target_include_directories(tfe PRIVATE ${SDL2_INCLUDE_DIRS})
-		target_include_directories(tfe PRIVATE ${SDL2_IMAGE_INCLUDE_DIRS})
-		target_link_libraries(tfe PRIVATE ${SDL2_LIBRARIES}
-					${SDL2_IMAGE_LIBRARIES}
-					${CMAKE_DL_LIBS}
-					Threads::Threads
+	    find_package(SDL2 CONFIG REQUIRED)
+    	find_package(SDL2_image CONFIG REQUIRED)
+    	target_include_directories(tfe PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+  		target_include_directories(tfe PRIVATE ${SDL2_IMAGE_INCLUDE_DIRS})
+		target_link_libraries(tfe PRIVATE
+			$<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+			$<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+			$<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
+			${CMAKE_DL_LIBS}
+			Threads::Threads
 		)
 
 		# set up build directory to be able to run TFE immediately: symlink

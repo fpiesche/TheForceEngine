@@ -30,7 +30,9 @@ jobs:
     - name: Dependencies (Linux)
       if: runner.os == 'linux'
       shell: bash
-      run: sudo apt-get update -qq && sudo apt-get install -y libsdl2-dev libsdl2-image-dev
+      run: |
+        sudo apt-get update -qq && \
+        sudo apt-get install -y libsdl2-dev libsdl2-image-dev rtmidi-dev
 
     - name: Dependencies (vcpkg)
       if: runner.os != 'linux'
